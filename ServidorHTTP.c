@@ -12,15 +12,13 @@
 #include <sys/stat.h>
 #include <pthread.h>
 
-
-#define FORMATOHORA "%a, %d %b %Y %H:%M:%S GMT"/*Formato de hora para cabecalho*/
 #define  N 5
 #define  MSG_TAM 1025
 #define  TAXA_USU 1
 
 // printf("\n\nISSO É UM TESTE MULA!!!!\n\n");
 
-void enviaArquivo (char *arq, FILE *sp,int sock_c, int taxa) 
+void enviaArquivo (char *arq, FILE *sp,int sock_c, int taxa,char* dados) 
 {
   FILE *fp;
   fp = fopen(arq,"r+");
@@ -34,17 +32,32 @@ void enviaArquivo (char *arq, FILE *sp,int sock_c, int taxa)
     printf("  MT - Arquivo encontrado \n");
     printf("  MT - Arquivo: %s \n",arq);
     char *buffer = (char*)malloc(taxa*sizeof(char));
-    char *result;
-    printf("\n\nISSO É UM TESTE MULAAAAAAAAAAAAAAAAAA!!!!\n\n");
-    while (!feof(fp))
+    int result;
+    int total=0;
+    int flag=1;
+//     char c;
+    rewind(sp);
+    rewind(fp);
+    while(flag)
     {
-      result = fgets(buffer,taxa,fp);
-      if (result)
+      result = fread(buffer,1,taxa,fp);
+      printf("\nLido:\n%s\n\n",buffer);
+      if(result <= 0)
       {
-	printf("%s",buffer);
-	write(sp,buffer,taxa);
+	flag=0;
       }
+      if(result > 0 && flag ==1) 
+      {
+	write(sock_c,buffer,result);
+//         printf("\n%d\n",result);
+      }
+      total=total+result;
+      printf("\n%d\n",result);
+//       c=fgetc(fp);
+//       printf("%s",buffer);
+//       fputc(c,sp);
     }
+    printf("\n\n  MT - Lidos: %d \n",total);
     fclose(fp);
   }
 }
@@ -66,16 +79,25 @@ char * trataTipoArquivo (char *tipo,struct stat fileinfo)
   } else if (!strcmp(tipo,"pdf\0")) 
   {
     temp = "application/pdf";
-  } else if (!strcmp(tipo,"jpg\0")) 
-  {
-    temp = "image/jpeg";
   } else if (!strcmp(tipo,"txt\0")) 
   {
     temp = "text/txt";
   } else if (!strcmp(tipo,"gif\0")) 
   {
     temp = "image/gif";
-  }
+  } else if (!strcmp(tipo,"jpeg\0")) 
+  {
+    temp = "image/jpeg";
+  } else if (!strcmp(tipo,"jpg\0")) 
+  {
+    temp = "image/jpeg";
+  }  else if (!strcmp(tipo,"html\0")) 
+  {
+    temp = "text/html";
+  } else if (!strcmp(tipo,"htm\0")) 
+  {
+    temp = "text/html";
+  }   
   int tam = fileinfo.st_size;
   printf("  MT - TAM: %d \n",tam);
   char  *tamtemp = (char*)malloc(10*sizeof(char));;
@@ -105,7 +127,7 @@ char * trataTipoArquivo (char *tipo,struct stat fileinfo)
   linha2 = "Connection: close\r\n";
   linha4 = "Server: Bizucaserver \r\n";
   retorno = (char*)malloc(500*sizeof(char));
-  sprintf(retorno, "%s%s%s%s%s%s%s%s%s%s%s%s"  , linha1 , linha2, date, "\r\n", linha4, LM, "\r\n", "Content-Length: ",tamtemp, "\r\n", "Content-Type: ",temp);
+  sprintf(retorno, "%s%s%s%s%s%s%s%s%s%s%s%s%s"  , linha1 , linha2, date, "\r\n", linha4, LM, "\r\n", "Content-Length: ",tamtemp, "\r\n", "Content-Type: ",temp,"\r\n\r\n");
   return retorno;
 }
 
@@ -120,7 +142,7 @@ void trataArquivo (char *arq, FILE *sp, int sock_c)
   char *linha4;
   char *dados;
   int  taxa = 0;
-  taxa = (TAXA_USU*1024*1024)/8;
+  taxa = (TAXA_USU*1024);
   dados = (char*)malloc(taxa*sizeof(char));
   char *arquivo = (char*)malloc(100*sizeof(char));
   strcpy(arquivo,arq);
@@ -137,8 +159,8 @@ void trataArquivo (char *arq, FILE *sp, int sock_c)
   printf("  MT - DADOS: \n\n");
   printf("%s",dados);
   printf("\n\n------------------------------------------------------------------------------------\n");
-  write(sp,dados,strlen(dados));
-  enviaArquivo(arquivo,sp,sock_c,taxa);
+  write(sock_c,dados,strlen(dados));
+  enviaArquivo(arquivo,sp,sock_c,taxa,dados);
   printf(" \n\n");
 }
 
@@ -180,7 +202,7 @@ void trataMensagem (char *mensagem,FILE *sp,int sock_c)
 int main(int argc, char  *argv[])
 {
   printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-  printf("XXXXXXXXXXXXXX Servidor HTTP - Thiago Martins - Redes de Computadores 2011/01 XXXXXXXXXXXXXX\n\n");
+  printf("XXXXXX Servidor HTTP - Thiago Martins e Eduardo Veiga - Redes de Computadores 2011/01 XXXXXX\n\n");
   /* Variáveis */
   int socket_c, cliente_s;
   int PORTA;
