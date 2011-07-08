@@ -10,7 +10,6 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/stat.h>
-#include <pthread.h>
 
 #define  N 5
 #define  MSG_TAM 1025
@@ -41,7 +40,8 @@ void enviaArquivo (char *arq, FILE *sp,int sock_c, int taxa,char* dados)
     while(flag)
     {
       result = fread(buffer,1,taxa,fp);
-      printf("\nLido:\n%s\n\n",buffer);
+      sleep(1);
+//       printf("\nLido:\n%s\n\n",buffer);
       if(result <= 0)
       {
 	flag=0;
@@ -142,7 +142,7 @@ void trataArquivo (char *arq, FILE *sp, int sock_c)
   char *linha4;
   char *dados;
   int  taxa = 0;
-  taxa = (TAXA_USU*1024);
+  taxa = (TAXA_USU*1024*1024);
   dados = (char*)malloc(taxa*sizeof(char));
   char *arquivo = (char*)malloc(100*sizeof(char));
   strcpy(arquivo,arq);
