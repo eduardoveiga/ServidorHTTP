@@ -1,15 +1,15 @@
-#Servidor HTTP
-##Autores
+# Servidor HTTP
+## Autores
 
-[Eduardo Veiga](mailto:kluwe@softwarelivre.org)
+* [Eduardo Veiga](mailto:kluwe@softwarelivre.org)
 
-[Thiago Martins](thiagoximendesmartins@gmail.com)
-
-
-##Descrição
-Esta é uma implementação de um servidor HTTP simples realizada como trabalho acadêmico para a  disciplina de redes.
-
-O servidor serve um cliente por vez tratando requisições GET que solicitem os seguintes tipos de arquivos:  documentos pdf,imagens jpg, textos txt,imagens gif, imagens png e arquivos html. 
+* [Thiago Martins](thiagoximendesmartins@gmail.com)
 
 
-[Mais informações](http://localhost)
+## DescriÃ§Ã£o
+Esta Ã© uma implementaÃ§Ã£o de um servidor HTTP simples realizada como trabalho acadÃªmico para a  disciplina de redes.
+
+O servidor serve um cliente por vez tratando requisiÃ§Ãµes GET que solicitem os seguintes tipos de arquivos:  documentos pdf,imagens jpg, textos txt,imagens gif, imagens png e arquivos html. 
+
+
+[Mais informaÃ§Ãµes](https://github.com/eduardoveiga/ServidorHTTP/blob/master/artigo.pdf)
